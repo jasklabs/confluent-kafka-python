@@ -35,7 +35,7 @@ Integration tests
 ### Configuration
 Tests are configured with a JSON encoded file referred to as a `testconf` to be provided as the last argument upon test execution.
 
-Advanced users can reference the provided configuration file, [testconf.json](../docker/conf/testconf.json), if modification is required.
+Advanced users can reference the provided configuration file, [testconf.json](testconf.json), if modification is required.
 Most developers however should just use the defaults.
 
 ### Running tests
@@ -43,7 +43,7 @@ To run all test `modes` uncomment the following line from `tox.ini`
 
 - With tox installed (will run against all supported interpreters)
   1. Uncomment the following line from [tox.ini](../tox.ini)
-    - ```#python examples/integration_test.py ./docker/conf/testconf.json```
+    - ```#python examples/integration_test.py```
   2. Execute the following script
     - ```./tests/run_all_tox.sh```
 
