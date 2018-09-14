@@ -6,7 +6,6 @@ cleanup() {
 
 trap cleanup 0 2 3 6 15
 
-
 TEST_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${TEST_SOURCE}/../../docker/.env
 
@@ -57,4 +56,3 @@ case ${1:-} in
         run_native $@
         ;;
 esac
-
