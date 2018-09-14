@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
+set -eu
 
 DOCKER_BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source ${DOCKER_BIN}/../.env
 
+# Wait for http service listener to come up and start serving
+# $1 http service name
+# $2 http service address
 await_http() {
     local exit_code
     local attempt=0
 
-    curl -s "$2" > /dev/null; exit_code=$?
-    while [ "${exit_code}" -ne 0 ] && [ "${attempt}" -lt 5 ]; do
+    until [[ $(curl ${2}) ]] || [[ ${attempt} -gt 5 ]]; do
         echo "awaiting $1..."
-        curl -s "$2" > /dev/null; exit_code=$?
         let "attempt+=1"
-        sleep 5
+        sleep 6
     done
 
-    if [ ${exit_code} -eq "0" ]; then
+    if [[ ${attempt} -lt 5 ]]; then
         return
     fi
 
-    echo "$1 readiness test failed aborting..."
+    echo "$1 readiness test failed: aborting"
     exit 1
 }
 
@@ -40,3 +42,4 @@ docker-compose -f ${DOCKER_CONTEXT} exec kafka sh -c "
 
 await_http "schema-registry" "http://localhost:8081"
 await_http "schema-registry-basic-auth" "http://localhost:8083"
+

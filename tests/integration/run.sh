@@ -6,8 +6,9 @@ cleanup() {
 
 trap cleanup 0 2 3 6 15
 
+
 TEST_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${TEST_SOURCE}/../docker/.env
+source ${TEST_SOURCE}/../../docker/.env
 
 if [[ ${1:-} == "help" ]]; then
     python ${TEST_SOURCE}/integration/integration_test.py --help
@@ -56,3 +57,4 @@ case ${1:-} in
         run_native $@
         ;;
 esac
+

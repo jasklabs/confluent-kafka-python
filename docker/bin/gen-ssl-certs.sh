@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -eu
 #
 #
 # This scripts generates:
@@ -19,10 +20,10 @@ else
     USE_KEYTOOL=0
 fi
 
-OP="$1"
-CA_CERT="$2"
-PFX="$3"
-HOST="$4"
+OP="${1:-}"
+CA_CERT="${2:-}"
+PFX="${3:-}"
+HOST="${4:-$(hostname -f)}"
 
 C=NN
 ST=NN

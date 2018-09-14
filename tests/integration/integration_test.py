@@ -903,7 +903,7 @@ def verify_avro_basic_auth(mode_conf):
 
 def run_avro_loop(producer_conf, consumer_conf):
     from confluent_kafka import avro
-    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'tests', 'avro')
+    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'avro')
 
     p = avro.AvroProducer(producer_conf)
 

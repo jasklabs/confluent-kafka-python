@@ -157,7 +157,7 @@ class TestCacheSchemaRegistryClient(unittest.TestCase):
         })
         self.assertTupleEqual(('/path/to/cert', '/path/to/key'), self.client._session.cert)
 
-    def test_emptry_url(self):
+    def test_empty_url(self):
         with self.assertRaises(ValueError):
             self.client = CachedSchemaRegistryClient({
                 'url': ''

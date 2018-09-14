@@ -33,10 +33,10 @@ Integration tests
     ./tests/cluster_down.sh
 
 ### Configuration
-Tests are configured with a JSON encoded file referred to as a `testconf` to be provided as the last argument upon test execution.
+Tests are configured with a JSON encoded file referred to as `testconf.json` to be provided as the last argument upon test execution.
 
-Advanced users can reference the provided configuration file, [testconf.json](testconf.json), if modification is required.
-Most developers however should just use the defaults.
+Advanced users can reference the provided configuration file, [testconf.json](integration/testconf.json), if modification is required.
+Most developers however should use the defaults.
 
 ### Running tests
 To run all test `modes` uncomment the following line from `tox.ini`
@@ -56,7 +56,7 @@ To run the full test-suite manually execute the following
 
 To run a specific test `mode` or set of test `modes` use the following syntax
 
-    python examples/integration_test.py [--test mode 1] [--test mode n...] <testconf>
+    ./tests/run.sh <test mode 1> <test mode 2>..
 
 For example:
 
