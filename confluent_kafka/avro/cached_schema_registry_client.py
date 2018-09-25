@@ -127,7 +127,7 @@ class CachedSchemaRegistryClient(object):
                              .format(auth_provider, VALID_AUTH_PROVIDERS))
 
         if auth_provider == 'SASL_INHERIT':
-            if conf.pop('sasl.mechanisms', '').upper() == 'GSSAPI':
+            if conf.pop('sasl.mechanisms', '').upper() not in ['PLAIN', 'SCRAM-SHA-256', 'SCRAM-SHA-512']:
                 raise ValueError("SASL_INHERIT supports SASL mechanisms PLAIN and SCRAM only")
             auth = (conf.pop('sasl.username', ''), conf.pop('sasl.password', ''))
         elif auth_provider == 'USER_INFO':
@@ -142,7 +142,7 @@ class CachedSchemaRegistryClient(object):
     def _configure_client_tls(conf):
         cert = conf.pop('ssl.certificate.location', None), conf.pop('ssl.key.location', None)
         # Both values can be None or no values can be None
-        if sum(x is None for x in cert) == 1:
+        if bool(cert[0]) != bool(cert[1]):
             raise ValueError(
                 "Both schema.registry.ssl.certificate.location and schema.registry.ssl.key.location must be set")
         return cert
