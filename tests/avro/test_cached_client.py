@@ -187,6 +187,7 @@ class TestCacheSchemaRegistryClient(unittest.TestCase):
         self.client = CachedSchemaRegistryClient({
             'url': 'https://user_url:secret_url@127.0.0.1:65534',
             'basic.auth.credentials.source': 'SASL_INHERIT',
+            'sasl.mechanism': 'PLAIN',
             'sasl.username': 'user_sasl',
             'sasl.password': 'secret_sasl'
         })
