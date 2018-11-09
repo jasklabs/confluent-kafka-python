@@ -1,7 +1,7 @@
 #!/usr/bin/env bash -eu
 
 DOCKER_BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-PASS="abcdefgh"
+export PASS="abcdefgh"
 
 source ${DOCKER_BIN}/../.env
 
