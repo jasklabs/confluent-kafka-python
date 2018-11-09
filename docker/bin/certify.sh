@@ -1,19 +1,14 @@
-#!/usr/bin/env bash
-set -eu
+#!/usr/bin/env bash -eu
 
 DOCKER_BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-export PASS="abcdefgh"
+PASS="abcdefgh"
+
 source ${DOCKER_BIN}/../.env
 
 if [[ -f ${TLS}/ca-cert ]]; then
     echo "${TLS}/ca-cert found; skipping certificate generation.."
     exit 0
 fi
-
-# Clean up old certs, warning this is
-#for file in $(ls ${TLS});do
-#        rm ${TLS}/${file}
-#done
 
 HOST=$(hostname -f)
 

@@ -28,9 +28,11 @@ run_tox() {
 run_native() {
     pip install -e .[avro]
     start_cluster
+
     for mode in "$@"; do
         modes="${modes:-} --${mode}"
     done
+
     echo "Executing test modes $@"
     python ${TEST_SOURCE}/integration/integration_test.py ${modes:-} ${TEST_SOURCE}/integration/testconf.json
 }

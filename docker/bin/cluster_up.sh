@@ -11,7 +11,7 @@ await_http() {
     local exit_code
     local attempt=0
 
-    until [[ $(curl ${2}) ]] || [[ ${attempt} -gt 5 ]]; do
+    until [[ `curl ${2}` ]] || [[ ${attempt} -gt 5 ]]; do
         echo "awaiting $1..."
         let "attempt+=1"
         sleep 6
@@ -25,10 +25,10 @@ await_http() {
     exit 1
 }
 
-echo "Configure Environment..."
+echo "Configuring Environment..."
 source ${DOCKER_SOURCE}/.env
 
-echo "Generate SSL certs..."
+echo "Generating SSL certs..."
 ${DOCKER_BIN}/certify.sh
 
 echo "Deploying cluster..."

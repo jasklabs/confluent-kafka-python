@@ -48,7 +48,7 @@ To run all test `modes` uncomment the following line from `tox.ini`
     - ```./tests/run_all_tox.sh```
 
 - Without tox (will run against current interpreter)
-  - ```./tests/run_all.sh```
+  - ```./tests/run.sh```
 
 To run the full test-suite manually execute the following
 

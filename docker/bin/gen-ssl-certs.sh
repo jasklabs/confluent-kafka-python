@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-set -eu
+#!/usr/bin/env bash -eu
 #
 #
 # This scripts generates:
@@ -9,9 +8,6 @@ set -eu
 #
 # https://cwiki.apache.org/confluence/display/KAFKA/Deploying+SSL+for+Kafka
 #
-
-DOCKER_BIN="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
 
 if [[ "$1" == "-k" ]]; then
     USE_KEYTOOL=1

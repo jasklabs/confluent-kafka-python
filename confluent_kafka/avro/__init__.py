@@ -30,7 +30,7 @@ class AvroProducer(Producer):
                  default_value_schema=None, schema_registry=None):
 
         sr_conf = {key.replace("schema.registry.", ""): value
-                   for key, value in config.items() if key.startswith("schema.registry.")}
+                   for key, value in config.items() if key.startswith("schema.registry")}
 
         if config.get("schema.registry.basic.auth.credentials.source") == 'SASL_INHERIT':
             sr_conf['sasl.mechanisms'] = config.get('sasl.mechanisms', '')
@@ -105,7 +105,7 @@ class AvroConsumer(Consumer):
     def __init__(self, config, schema_registry=None, reader_key_schema=None, reader_value_schema=None):
 
         sr_conf = {key.replace("schema.registry.", ""): value
-                   for key, value in config.items() if key.startswith("schema.registry.")}
+                   for key, value in config.items() if key.startswith("schema.registry")}
 
         if config.get("schema.registry.basic.auth.credentials.source") == 'SASL_INHERIT':
             sr_conf['sasl.mechanisms'] = config.get('sasl.mechanisms', '')

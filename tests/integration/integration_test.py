@@ -819,10 +819,7 @@ def verify_avro():
                  'api.version.request': api_version_request,
                  'api.version.fallback.ms': 0,
                  'broker.version.fallback': '0.11.0.0',
-                 'schema.registry.url': schema_registry_url,
-                 'default.topic.config': {
-                     'produce.offset.report': True
-                 }}
+                 'schema.registry.url': schema_registry_url}
 
     consumer_conf = dict(base_conf, **{
         'group.id': 'test.py',
@@ -840,20 +837,16 @@ def verify_avro_https(mode_conf):
     if mode_conf is None:
         abort_on_missing_configuration('avro-https')
 
-    base_conf = dict({'bootstrap.servers': bootstrap_servers,
-                      'error_cb': error_cb,
-                      'api.version.request': api_version_request},
-                     **mode_conf)
+    base_conf = dict(mode_conf, **{'bootstrap.servers': bootstrap_servers,
+                                   'error_cb': error_cb,
+                                   'api.version.request': api_version_request})
 
-    consumer_conf = dict({
-        'group.id': generate_group_id(),
-        'session.timeout.ms': 6000,
-        'enable.auto.commit': False,
-        'api.version.request': api_version_request,
-        'on_commit': print_commit_result,
-        'default.topic.config': {
-            'auto.offset.reset': 'earliest'
-        }}, **base_conf)
+    consumer_conf = dict(base_conf, **{'group.id': generate_group_id(),
+                                       'session.timeout.ms': 6000,
+                                       'enable.auto.commit': False,
+                                       'api.version.request': api_version_request,
+                                       'on_commit': print_commit_result,
+                                       'auto.offset.reset': 'earliest'})
 
     run_avro_loop(base_conf, consumer_conf)
 
@@ -940,7 +933,7 @@ def run_avro_loop(producer_conf, consumer_conf):
 
     msgcount = 0
     while msgcount < len(combinations):
-        msg = c.poll(0)
+        msg = c.poll(100)
 
         if msg is None or msg.error():
             continue
@@ -1483,8 +1476,8 @@ if __name__ == '__main__':
         modes = test_modes
 
     if bootstrap_servers is None or topic is None:
-        print_usage(1, "Properties bootstrap.servers and topic must be set. "
-                       "Use {} as a template when creating a new conf file.".format(testconf_file))
+        print_usage(1, "Missing property bootstrap.servers."
+                       "Ensure {} includes a valid bootstrap.servers property.".format(testconf_file))
 
     print('Using confluent_kafka module version %s (0x%x)' % confluent_kafka.version())
     print('Using librdkafka version %s (0x%x)' % confluent_kafka.libversion())
