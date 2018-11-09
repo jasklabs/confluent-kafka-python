@@ -139,8 +139,8 @@ class CachedSchemaRegistryClient(object):
                              .format(auth_provider, VALID_AUTH_PROVIDERS))
 
         if auth_provider == 'SASL_INHERIT':
-            if conf.pop('sasl.mechanism', '').upper() not in ['PLAIN', 'SCRAM-SHA-256', 'SCRAM-SHA-512']:
-                raise ValueError("SASL_INHERIT supports SASL mechanisms PLAIN and SCRAM only")
+            if conf.pop('sasl.mechanism', '').upper() is ['GSSAPI']:
+                raise ValueError("SASL_INHERIT does not support SASL mechanisms GSSAPI")
             auth = (conf.pop('sasl.username', ''), conf.pop('sasl.password', ''))
         elif auth_provider == 'USER_INFO':
             auth = tuple(conf.pop('basic.auth.user.info', '').split(':'))
