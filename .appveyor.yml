@@ -2,7 +2,7 @@ environment:
   global:
     LIBRDKAFKA_NUGET_VERSION: 1.0.0-RC2
     CIBW_SKIP: cp33-* cp34-*
-    CIBW_TEST_REQUIRES: pytest requests avro
+    CIBW_TEST_REQUIRES: pytest pytest-timeout requests avro
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
@@ -14,6 +14,9 @@ build_script:
 artifacts:
   - path: "wheelhouse\\*.whl"
     name: Wheels
+
+test_script:
+  - "build.cmd %PYTHON%\\python.exe -m pytest  -v --ignore tests/integration --timeout 20 --ignore=tmp-build --import-mode append"
 
 deploy:
 - provider: S3
