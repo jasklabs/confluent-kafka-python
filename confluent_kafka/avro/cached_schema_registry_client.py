@@ -31,13 +31,11 @@ from . import loads
 
 import sys
 
-PY3 = sys.version_info[0] == 3
-
 # Python 2 considers int an instance of str
-if PY3:
+if sys.version_info <= (3, 0):
     string_types = str,
 else:
-    string_types = basestring,
+    string_types = basestring # noqa
 
 VALID_LEVELS = ['NONE', 'FULL', 'FORWARD', 'BACKWARD']
 VALID_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
