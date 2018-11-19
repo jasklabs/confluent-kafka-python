@@ -74,7 +74,6 @@ class CachedSchemaRegistryClient(object):
         # In order to maintain compatibility the url(conf in future versions) param has been preserved for now.
         conf = url
         if not isinstance(url, dict):
-
             conf = {
                 'url': url,
                 'ssl.ca.location': ca_location,
@@ -93,7 +92,10 @@ class CachedSchemaRegistryClient(object):
 
         # Ensure URL valid scheme is included; http[s]
         url = conf.get('url', '')
-        if not isinstance(url, string_types) or not url.startswith('http'):
+        if not isinstance(url, string_types):
+            raise TypeError("URL must be of type str")
+
+        if not url.startswith('http'):
             raise ValueError("Invalid URL provided for Schema Registry")
 
         # subj => { schema => id }

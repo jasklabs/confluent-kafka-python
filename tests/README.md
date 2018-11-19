@@ -39,7 +39,9 @@ Advanced users can reference the provided configuration file, [testconf.json](in
 Most developers however should use the defaults.
 
 ### Running tests
-To run all test `modes` uncomment the following line from `tox.ini`
+To run the entire test suite: 
+
+From the source root directory ...
 
 - With tox installed (will run against all supported interpreters)
   1. Uncomment the following line from [tox.ini](../tox.ini)
@@ -48,20 +50,21 @@ To run all test `modes` uncomment the following line from `tox.ini`
     - ```./tests/run_all_tox.sh```
 
 - Without tox (will run against current interpreter)
-  - ```./tests/run.sh```
+  - ```./tests/run.sh all```
 
-To run the full test-suite manually execute the following
 
-    python examples/integration_test.py ./docker/conf/testconf.json
+To run just the unit tests
 
-To run a specific test `mode` or set of test `modes` use the following syntax
+    ./tests/run.sh unit
+
+To run a specific integration test `mode` or set of `modes` use the following syntax
 
     ./tests/run.sh <test mode 1> <test mode 2>..
 
 For example:
 
-    python examples/integration_test.py --producer --consumer ./docker/conf/testconf.json
+    ./tests/run.sh --producer --consumer
 
-To get a list of `modes` you can run the integration test manually with the `--help` flag
+To get a list of integration test `modes` simply supply the `help` option
 
     python examples/integration_tests.py --help

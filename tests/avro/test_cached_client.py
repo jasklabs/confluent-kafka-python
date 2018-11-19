@@ -164,12 +164,12 @@ class TestCacheSchemaRegistryClient(unittest.TestCase):
             })
 
     def test_invalid_type_url(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self.client = CachedSchemaRegistryClient(
                 url=1)
 
     def test_invalid_type_url_dict(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             self.client = CachedSchemaRegistryClient({
                 "url": 1
                 })
