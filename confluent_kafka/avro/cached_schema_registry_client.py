@@ -32,7 +32,7 @@ from . import loads
 import sys
 
 # Python 2 considers int an instance of str
-if sys.version_info <= (3, 0):
+if sys.version_info >= (3, 0):
     string_types = str,
 else:
     string_types = basestring # noqa
