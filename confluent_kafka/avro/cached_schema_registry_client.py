@@ -110,10 +110,6 @@ class CachedSchemaRegistryClient(object):
         s.cert = self._configure_client_tls(conf)
         s.auth = self._configure_basic_auth(conf)
 
-        retries = Retry(connect=10, read=10, backoff_factor=.5)
-        s.mount('http://', HTTPAdapter(max_retries=retries))
-        s.mount('https://', HTTPAdapter(max_retries=retries))
-
         self.url = conf.pop('url')
         self._session = s
 
