@@ -1,13 +1,15 @@
 #!/usr/bin/env bash -eu
 
+TEST_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+DOCKER_BIN=${TEST_SOURCE}/../docker/bin
+
 cleanup() {
         ${DOCKER_BIN}/cluster_down.sh
 }
 
 trap cleanup 0 2 3 6 15
 
-TEST_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-source ${TEST_SOURCE}/../docker/.env
+source ${DOCKER_BIN}/../.env
 
 if [[ ${1:-} == "help" ]]; then
     python ${TEST_SOURCE}/integration/integration_test.py --help
