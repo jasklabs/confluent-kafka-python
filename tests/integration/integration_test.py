@@ -1162,13 +1162,12 @@ def verify_admin():
 def verify_avro_explicit_read_schema():
     """ verify that reading Avro with explicit reader schema works"""
     from confluent_kafka import avro
-    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'tests', 'avro')
+    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'avro')
 
     # Producer config
     conf = {'bootstrap.servers': bootstrap_servers,
             'error_cb': error_cb,
-            'api.version.request': api_version_request,
-            'default.topic.config': {'produce.offset.report': True}}
+            'api.version.request': api_version_request}
 
     # Create producer
     if schema_registry_url:
@@ -1265,87 +1264,6 @@ default_modes = ['consumer', 'producer', 'avro', 'performance', 'admin']
 all_modes = default_modes + ['throttle', 'avro-https', 'avro-basic-auth', 'none']
 
 """All test modes"""
-
-
-def print_usage(exitcode, reason=None):
-    """ Print usage and exit with exitcode """
-    if reason is not None:
-        print('Error: %s' % reason)
-    print('Usage: %s [options] <broker> [<topic>] [<schema_registry>]' % sys.argv[0])
-    print('Options:')
-    print(' %s - limit to matching tests' % ', '.join(['--' + x for x in all_modes]))
-
-    sys.exit(exitcode)
-
-
-def run_avro_loop(producer_conf, consumer_conf):
-    from confluent_kafka import avro
-    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'tests', 'avro')
-
-    p = avro.AvroProducer(producer_conf)
-
-    prim_float = avro.load(os.path.join(avsc_dir, "primitive_float.avsc"))
-    prim_string = avro.load(os.path.join(avsc_dir, "primitive_string.avsc"))
-    basic = avro.load(os.path.join(avsc_dir, "basic_schema.avsc"))
-    str_value = 'abc'
-    float_value = 32.0
-
-    combinations = [
-        dict(key=float_value, key_schema=prim_float),
-        dict(value=float_value, value_schema=prim_float),
-        dict(key={'name': 'abc'}, key_schema=basic),
-        dict(value={'name': 'abc'}, value_schema=basic),
-        dict(value={'name': 'abc'}, value_schema=basic, key=float_value, key_schema=prim_float),
-        dict(value={'name': 'abc'}, value_schema=basic, key=str_value, key_schema=prim_string),
-        dict(value=float_value, value_schema=prim_float, key={'name': 'abc'}, key_schema=basic),
-        dict(value=float_value, value_schema=prim_float, key=str_value, key_schema=prim_string),
-        dict(value=str_value, value_schema=prim_string, key={'name': 'abc'}, key_schema=basic),
-        dict(value=str_value, value_schema=prim_string, key=float_value, key_schema=prim_float),
-        # Verify identity check allows Falsy object values(e.g., 0, empty string) to be handled properly (issue #342)
-        dict(value='', value_schema=prim_string, key=0.0, key_schema=prim_float),
-        dict(value=0.0, value_schema=prim_float, key='', key_schema=prim_string),
-    ]
-
-    for i, combo in enumerate(combinations):
-        combo['topic'] = str(uuid.uuid4())
-        combo['headers'] = [('index', str(i))]
-        p.produce(**combo)
-    p.flush()
-
-    c = avro.AvroConsumer(consumer_conf)
-    c.subscribe([(t['topic']) for t in combinations])
-
-    msgcount = 0
-    while msgcount < len(combinations):
-        msg = c.poll(0)
-
-        if msg is None or msg.error():
-            continue
-
-        tstype, timestamp = msg.timestamp()
-        print('%s[%d]@%d: key=%s, value=%s, tstype=%d, timestamp=%s' %
-              (msg.topic(), msg.partition(), msg.offset(),
-               msg.key(), msg.value(), tstype, timestamp))
-
-        # omit empty Avro fields from payload for comparison
-        record_key = msg.key()
-        record_value = msg.value()
-        index = int(dict(msg.headers())['index'])
-
-        if isinstance(msg.key(), dict):
-            record_key = {k: v for k, v in msg.key().items() if v is not None}
-
-        if isinstance(msg.value(), dict):
-            record_value = {k: v for k, v in msg.value().items() if v is not None}
-
-        assert combinations[index].get('key') == record_key
-        assert combinations[index].get('value') == record_value
-
-        c.commit()
-        msgcount += 1
-
-    # Close consumer
-    c.close()
 
 
 def generate_group_id():

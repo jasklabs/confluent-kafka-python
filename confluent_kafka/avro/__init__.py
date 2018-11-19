@@ -120,7 +120,7 @@ class AvroConsumer(Consumer):
         elif sr_conf.get("url", None) is not None:
             raise ValueError("Cannot pass schema_registry along with schema.registry.url config")
 
-        super(AvroConsumer, self).__init__(config)
+        super(AvroConsumer, self).__init__(ap_conf)
         self._serializer = MessageSerializer(schema_registry, reader_key_schema, reader_value_schema)
 
     def poll(self, timeout=None):

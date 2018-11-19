@@ -25,8 +25,6 @@ import warnings
 from collections import defaultdict
 
 from requests import Session, utils
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 
 from .error import ClientError
 from . import loads
