@@ -157,8 +157,7 @@ def verify_producer():
 
     # Producer config
     conf = {'bootstrap.servers': bootstrap_servers,
-            'error_cb': error_cb,
-            'api.version.request': api_version_request}
+            'error_cb': error_cb}
 
     # Create producer
     p = confluent_kafka.Producer(conf)
@@ -279,7 +278,6 @@ def test_producer_dr_only_error():
 def verify_producer_performance(with_dr_cb=True):
     """ Time how long it takes to produce and delivery X messages """
     conf = {'bootstrap.servers': bootstrap_servers,
-            'api.version.request': api_version_request,
             'linger.ms': 500,
             'error_cb': error_cb}
 
@@ -368,7 +366,6 @@ def verify_consumer():
             'group.id': 'test.py',
             'session.timeout.ms': 6000,
             'enable.auto.commit': False,
-            'api.version.request': api_version_request,
             'on_commit': print_commit_result,
             'error_cb': error_cb,
             'auto.offset.reset': 'earliest'}
@@ -602,7 +599,6 @@ def verify_batch_consumer():
             'group.id': 'test.py',
             'session.timeout.ms': 6000,
             'enable.auto.commit': False,
-            'api.version.request': api_version_request,
             'on_commit': print_commit_result,
             'error_cb': error_cb,
             'auto.offset.reset': 'earliest'}
@@ -749,7 +745,6 @@ def verify_batch_consumer_performance():
 def verify_avro():
     base_conf = {'bootstrap.servers': bootstrap_servers,
                  'error_cb': error_cb,
-                 'api.version.request': api_version_request,
                  'api.version.fallback.ms': 0,
                  'broker.version.fallback': '0.11.0.0',
                  'schema.registry.url': schema_registry_url}
@@ -759,9 +754,7 @@ def verify_avro():
         'session.timeout.ms': 6000,
         'enable.auto.commit': False,
         'on_commit': print_commit_result,
-        'default.topic.config': {
-            'auto.offset.reset': 'earliest'
-        }})
+        'auto.offset.reset': 'earliest'})
 
     run_avro_loop(base_conf, consumer_conf)
 
@@ -771,13 +764,11 @@ def verify_avro_https(mode_conf):
         abort_on_missing_configuration('avro-https')
 
     base_conf = dict(mode_conf, **{'bootstrap.servers': bootstrap_servers,
-                                   'error_cb': error_cb,
-                                   'api.version.request': api_version_request})
+                                   'error_cb': error_cb})
 
     consumer_conf = dict(base_conf, **{'group.id': generate_group_id(),
                                        'session.timeout.ms': 6000,
                                        'enable.auto.commit': False,
-                                       'api.version.request': api_version_request,
                                        'on_commit': print_commit_result,
                                        'auto.offset.reset': 'earliest'})
 
@@ -806,16 +797,14 @@ def verify_avro_basic_auth(mode_conf):
     base_conf = {
             'bootstrap.servers': bootstrap_servers,
             'error_cb': error_cb,
-            'api.version.request': api_version_request,
             'schema.registry.url': schema_registry_url
             }
 
     consumer_conf = dict({'group.id': generate_group_id(),
                           'session.timeout.ms': 6000,
                           'enable.auto.commit': False,
-                          'default.topic.config': {
-                              'auto.offset.reset': 'earliest'
-                          }}, **base_conf)
+                          'auto.offset.reset': 'earliest'
+                          }, **base_conf)
 
     print('-' * 10, 'Verifying basic auth source USER_INFO', '-' * 10)
     run_avro_loop(dict(base_conf, **user_info), dict(consumer_conf, **user_info))
@@ -866,9 +855,12 @@ def run_avro_loop(producer_conf, consumer_conf):
 
     msgcount = 0
     while msgcount < len(combinations):
-        msg = c.poll(100)
+        msg = c.poll(1)
 
-        if msg is None or msg.error():
+        if msg is None:
+            continue
+        if msg.error():
+            print msg.error()
             continue
 
         tstype, timestamp = msg.timestamp()
@@ -903,7 +895,6 @@ def verify_throttle_cb():
         See tests/README.md for more information
     """
     conf = {'bootstrap.servers': bootstrap_servers,
-            'api.version.request': api_version_request,
             'linger.ms': 500,
             'client.id': 'throttled_client',
             'throttle_cb': throttle_cb}
@@ -1166,8 +1157,7 @@ def verify_avro_explicit_read_schema():
 
     # Producer config
     conf = {'bootstrap.servers': bootstrap_servers,
-            'error_cb': error_cb,
-            'api.version.request': api_version_request}
+            'error_cb': error_cb}
 
     # Create producer
     if schema_registry_url:
@@ -1199,12 +1189,9 @@ def verify_avro_explicit_read_schema():
                  'group.id': 'test.py',
                  'session.timeout.ms': 6000,
                  'enable.auto.commit': False,
-                 'api.version.request': api_version_request,
                  'on_commit': print_commit_result,
                  'error_cb': error_cb,
-                 'default.topic.config': {
-                     'auto.offset.reset': 'earliest'
-                 }}
+                 'auto.offset.reset': 'earliest'}
 
     for i, combo in enumerate(combinations):
         reader_key_schema = combo.pop("reader_key_schema")
@@ -1327,8 +1314,10 @@ if __name__ == '__main__':
         modes = test_modes
 
     if bootstrap_servers is None or topic is None:
-        print_usage(1, "Missing property bootstrap.servers."
-                       "Ensure {} includes a valid bootstrap.servers property.".format(testconf_file))
+        print_usage(1, "Missing required property bootstrap.servers")
+
+    if topic is None:
+        print_usage(1, "Missing required property topic")
 
     print('Using confluent_kafka module version %s (0x%x)' % confluent_kafka.version())
     print('Using librdkafka version %s (0x%x)' % confluent_kafka.libversion())

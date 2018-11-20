@@ -13,7 +13,7 @@ source ${DOCKER_BIN}/../.env
 
 if [[ ${1:-} == "help" ]]; then
     python ${TEST_SOURCE}/integration/integration_test.py --help
-    exit 1
+    exit 0
 fi
 
 start_cluster() {
