@@ -10,7 +10,7 @@ await_http() {
     local exit_code
     local attempt=0
 
-    until [[ `curl ${2}` ]] || [[ ${attempt} -gt 5 ]]; do
+    until curl ${2} || [[ ${attempt} -gt 5 ]]; do
         echo "awaiting $1..."
         let "attempt+=1"
         sleep 6
