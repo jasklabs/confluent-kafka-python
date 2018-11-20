@@ -31,9 +31,9 @@ from . import loads
 
 # Python 2 considers int an instance of str
 try:
-    string_types = basestring  # noqa
+    string_type = basestring  # noqa
 except NameError:
-    string_types = str,
+    string_type = str
 
 VALID_LEVELS = ['NONE', 'FULL', 'FORWARD', 'BACKWARD']
 VALID_METHODS = ['GET', 'POST', 'PUT', 'DELETE']
@@ -86,7 +86,7 @@ class CachedSchemaRegistryClient(object):
 
         # Ensure URL valid scheme is included; http[s]
         url = conf.get('url', '')
-        if not isinstance(url, string_types):
+        if not isinstance(url, string_type):
             raise TypeError("URL must be of type str")
 
         if not url.startswith('http'):
@@ -164,8 +164,11 @@ class CachedSchemaRegistryClient(object):
         response = self._session.request(method, url, headers=_headers, json=body)
 
         # Returned by Jetty not SR so the payload is not json encoded
-        if response.status_code == 401 or response.status_code == 403:
-            raise ClientError(response.text)
+        if response.status_code >= 400 and response.status_code < 500:
+            try:
+                return response.json(), response.status_code
+            except ValueError:
+                raise ClientError(response.text)
 
         return response.json(), response.status_code
 
