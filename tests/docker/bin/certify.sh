@@ -5,6 +5,8 @@ export PASS="abcdefgh"
 
 source ${DOCKER_BIN}/../.env
 
+mkdir -p ${TLS}
+
 if [[ -f ${TLS}/ca-cert ]]; then
     echo "${TLS}/ca-cert found; skipping certificate generation.."
     exit 0

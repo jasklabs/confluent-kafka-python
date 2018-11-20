@@ -1,7 +1,7 @@
 #!/usr/bin/env bash -eu
 
 TEST_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-DOCKER_BIN=${TEST_SOURCE}/../docker/bin
+DOCKER_BIN=${TEST_SOURCE}/docker/bin
 
 cleanup() {
         ${DOCKER_BIN}/cluster_down.sh
