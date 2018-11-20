@@ -40,7 +40,7 @@ run_native() {
 }
 
 run_unit() {
-    py.test -v --ignore tests/integration --timeout 20 --ignore=tmp-build
+    py.test -v --timeout 20 --ignore=tmp-build
 }
 
 case ${1:-} in
