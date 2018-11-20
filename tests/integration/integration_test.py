@@ -860,7 +860,7 @@ def run_avro_loop(producer_conf, consumer_conf):
         if msg is None:
             continue
         if msg.error():
-            print msg.error()
+            print(msg.error())
             continue
 
         tstype, timestamp = msg.timestamp()
