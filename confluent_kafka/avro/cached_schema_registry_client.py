@@ -164,13 +164,10 @@ class CachedSchemaRegistryClient(object):
         response = self._session.request(method, url, headers=_headers, json=body)
 
         # Returned by Jetty not SR so the payload is not json encoded
-        if response.status_code >= 400 and response.status_code < 500:
-            try:
-                return response.json(), response.status_code
-            except ValueError:
-                raise ClientError(response.text)
-
-        return response.json(), response.status_code
+        try:
+            return response.json(), response.status_code
+        except ValueError:
+            return response.content, response.status_code
 
     @staticmethod
     def _add_to_cache(cache, subject, schema, value):
@@ -216,7 +213,9 @@ class CachedSchemaRegistryClient(object):
 
         body = {'schema': json.dumps(avro_schema.to_json())}
         result, code = self._send_request(url, method='POST', body=body)
-        if code == 409:
+        if (code == 401 or code == 403):
+            raise ClientError("Unauthorized access. Error code:" + str(code))
+        elif code == 409:
             raise ClientError("Incompatible Avro schema:" + str(code))
         elif code == 422:
             raise ClientError("Invalid Avro schema:" + str(code))
