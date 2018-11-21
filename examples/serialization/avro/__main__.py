@@ -18,7 +18,7 @@ record_schema_str = """
 """
 
 
-class ParseArgs(object):
+class ParserOpts(object):
     def _build(self):
         conf = {'bootstrap.servers': self.bootstrap_servers,
                 'schema.registry.url': self.schema_registry}
@@ -39,7 +39,7 @@ class User(dict):
     _schema = avro.loads(record_schema_str)
 
     def __init__(self):
-        super(dict, self).__init__({"name" : "anonymous",
+        super(dict, self).__init__({"name": "anonymous",
                                     "favorite_number": 0,
                                     "favorite_color": ""})
 
@@ -63,8 +63,7 @@ class User(dict):
 
 def on_delivery(err, msg):
     if err is not None and msg is not None:
-        print('Message delivery failed ({} [{}]): %{}'.format(
-              (msg.topic(), str(msg.partition()), err)))
+        print('Message delivery failed ({} [{}]): %{}'.format(msg.topic(), str(msg.partition()), err))
         return 0
     elif err is not None:
         print('Message delivery failed {}'.format(err))
@@ -132,11 +131,13 @@ def consume(args):
 
 
 def main():
+    # To use the cluster execute <source root>/tests/docker/bin/cluster_up.sh.
+    # Defaults assume the use of the provided test cluster.
     parser = argparse.ArgumentParser(description="Example client for handling Avro data")
     parser.add_argument('-b', metavar="<brokers,...>", dest="bootstrap_servers",
                         default="localhost:29092", help="Bootstrap broker(s) (host[:port])")
     parser.add_argument('-s', metavar="<schema registry>", dest="schema_registry",
-                        default="http://localhost:8081", help="Schema Registry (http(s)://host[:port]")
+                        default="http://localhost:8083", help="Schema Registry (http(s)://host[:port]")
     parser.add_argument('-t', metavar="[<topic>]", dest="topic", default="example_avro",
                         help="topic name")
     parser.add_argument('-u', metavar="[<userinfo>]", dest="userinfo", default="ckp_tester:test_secret",
@@ -145,7 +146,7 @@ def main():
                         help="Execution mode (produce | consume)")
     parser.add_argument('-g', metavar="[<consumer group>]", dest="group", default="example_avro",
                         help="consumer group; required if running 'consumer' mode")
-    conf = ParseArgs()
+    conf = ParserOpts()
     parser.parse_args(namespace=conf)
 
     getattr(sys.modules[__name__], conf.mode)(conf)
@@ -153,4 +154,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
