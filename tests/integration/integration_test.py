@@ -742,6 +742,28 @@ def verify_batch_consumer_performance():
     c.close()
 
 
+def verify_schema_registry_client():
+    from confluent_kafka import avro
+
+    sr_conf = {'url': schema_registry_url}
+    sr = avro.CachedSchemaRegistryClient(sr_conf)
+
+    subject = str(uuid.uuid4())
+
+    avsc_dir = os.path.join(os.path.dirname(__file__), os.pardir, 'avro')
+    schema = avro.load(os.path.join(avsc_dir, "primitive_float.avsc"))
+
+    schema_id = sr.register(subject, schema)
+    assert schema == sr.get_by_id(schema_id)
+    latest_id, latest_schema, latest_version = sr.get_latest_schema(subject)
+    assert schema == latest_schema
+    assert sr.get_version(subject, schema) == latest_version
+    sr.update_compatibility("FULL", subject)
+    assert sr.get_compatibility(subject) == "FULL"
+    assert sr.test_compatibility(subject, schema)
+    assert sr.delete_subject(subject) == [1]
+
+
 def verify_avro():
     base_conf = {'bootstrap.servers': bootstrap_servers,
                  'error_cb': error_cb,
@@ -1361,6 +1383,8 @@ if __name__ == '__main__':
         verify_throttle_cb()
 
     if 'avro' in modes:
+        print('=' * 30, 'Verifying Schema Registry Client', '=' * 30)
+        verify_schema_registry_client()
         print('=' * 30, 'Verifying AVRO', '=' * 30)
         verify_avro()
 

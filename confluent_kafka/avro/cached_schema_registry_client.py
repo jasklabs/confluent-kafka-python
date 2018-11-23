@@ -128,7 +128,7 @@ class CachedSchemaRegistryClient(object):
         auth_provider = conf.pop('basic.auth.credentials.source', 'URL').upper()
         if auth_provider not in VALID_AUTH_PROVIDERS:
             raise ValueError("schema.registry.basic.auth.credentials.source must be one of {}"
-                             .format(auth_provider, VALID_AUTH_PROVIDERS))
+                             .format(VALID_AUTH_PROVIDERS))
 
         if auth_provider == 'SASL_INHERIT':
             if conf.pop('sasl.mechanism', '').upper() is ['GSSAPI']:
@@ -226,6 +226,23 @@ class CachedSchemaRegistryClient(object):
         # cache it
         self._cache_schema(avro_schema, schema_id, subject)
         return schema_id
+
+    def delete_subject(self, subject):
+        """
+        DELETE /subjects/(string: subject)
+        Deletes the specified subject and its associated compatibility level if registered.
+        It is recommended to use this API only when a topic needs to be recycled or in development environments
+
+        @:param: subject: subject name
+        @:returns: version (int) - version of the schema deleted under this subject
+        """
+
+        url = '/'.join([self.url, 'subjects', subject])
+
+        result, code = self._send_request(url, method="DELETE")
+        if not (code >= 200 and code <= 299):
+            raise ClientError('Unable to delete subject. Error code: %d' % code)
+        return result
 
     def get_by_id(self, schema_id):
         """
@@ -392,14 +409,14 @@ class CachedSchemaRegistryClient(object):
         """
         url = '/'.join([self.url, 'config'])
         if subject:
-            url += '/' + subject
+            url = '/'.join([url, subject])
 
         result, code = self._send_request(url)
         is_successful_request = code >= 200 and code <= 299
         if not is_successful_request:
             raise ClientError('Unable to fetch compatibility level. Error code: %d' % code)
 
-        compatibility = result.get('compatibility', None)
+        compatibility = result.get('compatibilityLevel', None)
         if compatibility not in VALID_LEVELS:
             if compatibility is None:
                 error_msg_suffix = 'No compatibility was returned'
