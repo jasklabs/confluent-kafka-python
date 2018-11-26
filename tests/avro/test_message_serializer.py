@@ -66,13 +66,12 @@ class TestMessageSerializer(unittest.TestCase):
             self.assertMessageIsSame(message, record, adv_schema_id)
 
     def test_encode_record_with_schema(self):
-        topic = 'test'
         basic = avro.loads(data_gen.BASIC_SCHEMA)
         subject = 'test-value'
         schema_id = self.client.register(subject, basic)
         records = data_gen.BASIC_ITEMS
         for record in records:
-            message = self.ms.encode_record_with_schema(topic, basic, record)
+            message = self.ms.encode_record_with_schema(basic, record)
             self.assertMessageIsSame(message, record, schema_id)
 
     def test_decode_none(self):
