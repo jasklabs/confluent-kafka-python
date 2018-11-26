@@ -2,6 +2,7 @@
 
 import os
 from setuptools import setup, find_packages
+from subprocess import call
 from distutils.core import Extension
 import sys
 import platform
@@ -20,6 +21,8 @@ if platform.system() == 'Windows':
     librdkafka_libname = 'librdkafka'
 else:
     librdkafka_libname = 'rdkafka'
+
+call(["./tools/bootstrap-librdkafka.sh", "v1.0.0-RC3"])
 
 module = Extension('confluent_kafka.cimpl',
                    libraries=[librdkafka_libname],
