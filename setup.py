@@ -22,7 +22,9 @@ if platform.system() == 'Windows':
 else:
     librdkafka_libname = 'rdkafka'
 
-call(["./tools/bootstrap-librdkafka.sh", "v1.0.0-RC3"])
+call(["./tools/bootstrap-librdkafka.sh", "v1.0.0-RC3", 'librdkafka-tmp'])
+os.environ['CFLAGS'] ="-Ilibrdkafka-tmp/include"
+os.environ['LDFLAGS'] = "-Llibrdkafka-tmp/lib"
 
 module = Extension('confluent_kafka.cimpl',
                    libraries=[librdkafka_libname],
